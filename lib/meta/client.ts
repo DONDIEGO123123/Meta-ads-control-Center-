@@ -4,6 +4,12 @@ const TOKEN = process.env.META_ACCESS_TOKEN!;
 
 type Params = Record<string, string | number | undefined>;
 
+type MetaPage<T> = {
+  data?: T[];
+  paging?: { next?: string };
+  error?: { message: string };
+};
+
 export async function metaGetAll<T = any>(
   path: string,
   params: Params = {}
@@ -13,14 +19,17 @@ export async function metaGetAll<T = any>(
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined) url.searchParams.set(k, String(v));
   }
+
   const rows: T[] = [];
   let next: string | undefined = url.toString();
+
   while (next) {
-    const res = await fetch(next);
-    const json = await res.json();
+    const res: Response = await fetch(next);
+    const json: MetaPage<T> = await res.json();
     if (json.error) throw new Error(json.error.message);
-    rows.push(...(json.data || []));
+    rows.push(...(json.data ?? []));
     next = json.paging?.next;
   }
+
   return rows;
 }
