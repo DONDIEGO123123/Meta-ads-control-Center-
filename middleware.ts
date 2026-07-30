@@ -24,7 +24,7 @@ async function valid(token: string | undefined): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (PUBLIC.some((p) => pathname.startsWith(p))) return NextResponse.next();
-  if (pathname.startsWith("/api/sync")) return NextResponse.next(); // מוגן בסוד משלו
+  if (pathname.startsWith("/api/sync")) return NextResponse.next(); // guarded by its own secret
 
   if (!(await valid(req.cookies.get("session")?.value))) {
     const url = req.nextUrl.clone();
