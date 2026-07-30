@@ -7,9 +7,11 @@ type MetaCampaign = {
 };
 const minorToMajor = (v?: string) => (v ? Number(v) / 100 : null);
 
-export async function syncCampaigns() {
+export async function syncCampaigns(onlyMetaAccountId?: string) {
   const db = supabaseAdmin();
-  const { data: accounts } = await db.from("ad_accounts").select("id,meta_account_id");
+  let q = db.from("ad_accounts").select("id,meta_account_id");
+  if (onlyMetaAccountId) q = q.eq("meta_account_id", onlyMetaAccountId);
+  const { data: accounts } = await q;
   const accs = (accounts ?? []) as any[];
   let count = 0;
   const errors: string[] = [];
@@ -41,5 +43,5 @@ export async function syncCampaigns() {
       errors.push(`${acc.meta_account_id}: ${e.message}`);
     }
   }
-  return { count, errors };
+  return { count, errors, accountsProcessed: accs.length };
 }
