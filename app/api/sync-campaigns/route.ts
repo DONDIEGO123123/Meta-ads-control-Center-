@@ -1,20 +1,18 @@
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+import { syncCampaigns } from "@/lib/meta/sync-campaigns";
 
-export type CampaignRow = {
-  id: string; metaCampaignId: string; name: string | null;
-  status: string | null; objective: string | null;
-  dailyBudget: number | null; accountName: string | null; currency: string | null;
-};
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
-export async function getCampaigns(): Promise<CampaignRow[]> {
-  const db = supabaseAdmin();
-  const { data } = await db.from("campaigns")
-    .select("id,meta_campaign_id,name,status,objective,daily_budget,ad_accounts(name,currency)")
-    .order("updated_at", { ascending: false }).limit(1000);
-  const rows = (data ?? []) as any[];
-  return rows.map((c) => ({
-    id: c.id, metaCampaignId: c.meta_campaign_id, name: c.name,
-    status: c.status, objective: c.objective, dailyBudget: c.daily_budget,
-    accountName: c.ad_accounts?.name ?? null, currency: c.ad_accounts?.currency ?? null,
-  }));
+export async function GET(req: Request) {
+  const secret = new URL(req.url).searchParams.get("secret");
+  if (secret !== process.env.SYNC_SECRET) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  try {
+    const result = await syncCampaigns();
+    return NextResponse.json({ ok: true, ...result });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
 }
