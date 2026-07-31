@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const { metaCampaignId, campaignName, action, value, runAt } = await req.json();
+    const { metaCampaignId, campaignName, action, value, runAt, repeat } = await req.json();
     if (!metaCampaignId || !action || !runAt) {
       return NextResponse.json({ error: "missing fields" }, { status: 400 });
     }
@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       action,
       value: action === "budget" ? Number(value) : null,
       run_at: runAt,
+      repeat: repeat ?? "none",
     });
     if (error) throw new Error(error.message);
     return NextResponse.json({ ok: true });

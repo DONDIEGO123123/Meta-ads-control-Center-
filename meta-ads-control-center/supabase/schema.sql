@@ -92,9 +92,22 @@ create table scheduled_actions (
   value            numeric(14,2),
   run_at           timestamptz not null,
   status           text not null default 'pending',
+  repeat           text not null default 'none',
   result           text,
   created_at       timestamptz default now(),
   executed_at      timestamptz
+);
+
+-- ── Ads (for ad-level on/off) ─────────────────────────────────────────
+create table ads (
+  id               uuid primary key default gen_random_uuid(),
+  account_id       uuid not null references ad_accounts(id) on delete cascade,
+  meta_ad_id       text not null unique,
+  name             text,
+  status           text,
+  effective_status text,
+  campaign_name    text,
+  updated_at       timestamptz default now()
 );
 
 -- ── RLS (server uses the service-role key, which bypasses RLS) ─────────
@@ -105,6 +118,7 @@ alter table activity_log      enable row level security;
 alter table app_settings      enable row level security;
 alter table campaigns         enable row level security;
 alter table scheduled_actions enable row level security;
+alter table ads               enable row level security;
 
 -- ── Indexes ───────────────────────────────────────────────────────────
 create index on account_insights (date);
@@ -112,3 +126,4 @@ create index on account_insights (account_id, date);
 create index on activity_log (created_at);
 create index on campaigns (account_id);
 create index on scheduled_actions (status, run_at);
+create index on ads (account_id);

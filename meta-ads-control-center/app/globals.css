@@ -3,4 +3,12 @@
 @tailwind utilities;
 
 html, body { height: 100%; }
-body { -webkit-font-smoothing: antialiased; }
+body {
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(37,99,235,0.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(124,58,237,0.05), transparent 55%),
+    #F7F9FC;
+}
+::selection { background: rgba(37,99,235,0.15); }
+.num { font-variant-numeric: tabular-nums; }

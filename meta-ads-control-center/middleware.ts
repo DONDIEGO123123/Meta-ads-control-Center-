@@ -24,7 +24,9 @@ async function valid(token: string | undefined): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (PUBLIC.some((p) => pathname.startsWith(p))) return NextResponse.next();
-  if (pathname.startsWith("/api/sync")) return NextResponse.next(); // guarded by its own secret
+  // Sync + cron endpoints authenticate themselves (secret / cron bearer)
+  if (pathname.startsWith("/api/sync")) return NextResponse.next();
+  if (pathname.startsWith("/api/cron")) return NextResponse.next();
 
   if (!(await valid(req.cookies.get("session")?.value))) {
     const url = req.nextUrl.clone();

@@ -20,8 +20,8 @@ export default async function AccountsPage() {
             <tr>
               <th className="text-right font-medium px-4 py-3">חשבון</th>
               <th className="text-right font-medium px-4 py-3">סטטוס</th>
-              <th className="text-right font-medium px-4 py-3">Spend</th>
-              <th className="text-right font-medium px-4 py-3">Revenue</th>
+              <th className="text-right font-medium px-4 py-3">הוצאה</th>
+              <th className="text-right font-medium px-4 py-3">הכנסה</th>
               <th className="text-right font-medium px-4 py-3">ROAS</th>
             </tr>
           </thead>
@@ -38,9 +38,9 @@ export default async function AccountsPage() {
                     {a.status === "1" ? "פעיל" : "מושהה"}
                   </span>
                 </td>
-                <td className="px-4 py-3">{money(a.spend, a.currency)}</td>
-                <td className="px-4 py-3 text-brand-green">{money(a.revenue, a.currency)}</td>
-                <td className="px-4 py-3 text-brand-blue font-semibold">{a.roas.toFixed(2)}</td>
+                <td className="px-4 py-3 num">{money(a.spend, a.currency)}</td>
+                <td className="px-4 py-3 text-brand-green num">{money(a.revenue, a.currency)}</td>
+                <td className="px-4 py-3 text-brand-blue font-semibold num">{a.roas.toFixed(2)}</td>
               </tr>
             ))}
             {accounts.length === 0 && (
